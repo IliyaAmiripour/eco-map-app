@@ -1,0 +1,4 @@
+const LANGS=[{code:'fa',label:'فارسی'},{code:'en',label:'English'},{code:'fr',label:'Français'},{code:'no',label:'Norsk'},{code:'it',label:'Italiano'},{code:'es',label:'Español'},{code:'ko',label:'한국어'}];
+let I18N={};fetch('assets/js/i18n.json').then(r=>r.json()).then(d=>{I18N=d;initLang();});
+function initLang(){const sel=document.getElementById('langSelect');if(!sel)return;sel.innerHTML=LANGS.map(l=>`<option value="${l.code}">${l.label}</option>`).join('');const saved=localStorage.getItem('lang')||'fa';sel.value=saved;applyLang(saved);sel.onchange=()=>{localStorage.setItem('lang',sel.value);applyLang(sel.value);};}
+function applyLang(code){const dict=I18N[code]||I18N['en'];document.querySelectorAll('[data-i18n]').forEach(el=>{const keys=el.getAttribute('data-i18n').split('.');let cur=dict;for(const k of keys){if(cur&&k in cur)cur=cur[k];else{cur=null;break;}}if(typeof cur==='string')el.textContent=cur;});if(dict?.site?.title)document.title=dict.site.title;}

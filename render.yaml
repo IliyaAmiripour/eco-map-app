@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: eco-backend
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: SERVICE_ACCOUNT_JSON
+        sync: false
