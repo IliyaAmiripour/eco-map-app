@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="fa"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title data-i18n="site.title">Eco3D | Earth Care</title>
+<link rel="icon" href="assets/images/favicon.svg"/>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="assets/css/styles.css" rel="stylesheet">
+<script defer src="https://unpkg.com/lucide@latest"></script>
+<script defer src="assets/js/app.js"></script>
+<script defer src='assets/js/firebase-config.js'></script>
+<script defer src='https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js'></script>
+<script defer src='https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js'></script>
+<script defer src='https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js'></script>
+<script defer src='https://www.gstatic.com/firebasejs/10.12.3/firebase-storage-compat.js'></script>
+<script defer src='assets/js/storage.js'></script>
+</head><body>
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 font-semibold text-green-700">
+      <span class="text-2xl">🌍</span><span data-i18n="site.brand">Eco3D</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-sm">
+      <a href="map.html" class="hover:text-green-700" data-i18n="nav.map">Map</a>
+      <a href="gallery.html" class="hover:text-green-700" data-i18n="nav.gallery">Gallery</a>
+      <a href="leaderboard.html" class="hover:text-green-700" data-i18n="nav.leaderboard">Leaderboard</a>
+      <a href="tutorials.html" class="hover:text-green-700" data-i18n="nav.tutorials">Tutorials</a>
+      <a href="survey.html" class="hover:text-green-700" data-i18n="nav.survey">Survey</a>
+      <a href="about.html" class="hover:text-green-700" data-i18n="nav.about">About</a>
+      <a href="contact.html" class="hover:text-green-700" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <select id="langSelect" class="border rounded px-2 py-1 text-sm"></select>
+      <a href="auth.html" class="px-3 py-1 rounded bg-green-600 text-white text-sm" data-i18n="nav.login">Login</a>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-4" data-i18n="gallery.title">Cleanup Gallery</h1>
+  <form id="uploadForm" class="p-4 border rounded-2xl grid md:grid-cols-4 gap-3 items-end">
+    <div><label class="text-sm block mb-1" data-i18n="gallery.name">Your name</label><input id="uName" class="w-full border rounded px-3 py-2"/></div>
+    <div class="md:col-span-2"><label class="text-sm block mb-1" data-i18n="gallery.caption">Caption</label><input id="uCaption" class="w-full border rounded px-3 py-2" placeholder="Beach cleanup"/></div>
+    <div><label class="text-sm block mb-1" data-i18n="gallery.photo">Photo</label><input id="uFile" type="file" accept="image/*" class="w-full"/></div>
+    <button class="px-4 py-2 bg-green-600 text-white rounded" type="submit" data-i18n="gallery.upload">Upload</button>
+  </form>
+  <h2 class="text-xl font-semibold mt-8 mb-3" data-i18n="gallery.recent">Recent uploads</h2>
+  <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+</main>
+<footer class="mt-16 bg-gray-50 border-t">
+  <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8">
+    <div>
+      <div class="flex items-center gap-2 text-green-700 font-semibold">
+        <span class="text-2xl">🌍</span><span data-i18n="site.brand">Eco3D</span>
+      </div>
+      <p class="mt-3 text-gray-600" data-i18n="site.tagline">Clean the planet, one spot at a time.</p>
+    </div>
+    <div>
+      <h3 class="font-semibold mb-3" data-i18n="footer.links">Links</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="map.html" class="hover:text-green-700" data-i18n="nav.map">Map</a></li>
+        <li><a href="gallery.html" class="hover:text-green-700" data-i18n="nav.gallery">Gallery</a></li>
+        <li><a href="leaderboard.html" class="hover:text-green-700" data-i18n="nav.leaderboard">Leaderboard</a></li>
+        <li><a href="tutorials.html" class="hover:text-green-700" data-i18n="nav.tutorials">Tutorials</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-semibold mb-3" data-i18n="footer.cta">Get involved</h3>
+      <p class="text-sm text-gray-600" data-i18n="footer.ctaText">Sign up, clean a spot, upload a photo, and climb the leaderboard.</p>
+    </div>
+  </div>
+  <div class="border-t py-4 text-center text-xs text-gray-500">© <span id="year"></span> Eco3D</div>
+</footer>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
+<script>
+function render(items){{const g=document.getElementById('grid');g.innerHTML='';items.sort((a,b)=>b.createdAt-a.createdAt).forEach(x=>{{const d=document.createElement('div');d.className='overflow-hidden rounded-2xl border shadow-sm';d.innerHTML=`<img src="${{x.url||'assets/images/gallery_placeholder.svg'}}" alt="" class="w-full h-56 object-cover"/><div class='p-3'><div class='font-semibold'>${{x.name}}</div><div class='text-sm text-gray-600 mb-2'>${{x.caption}}</div><div class='text-xs'>${{new Date(x.createdAt).toLocaleString()}}</div></div>`;g.appendChild(d);}});}}
+async function refresh(){{const items=await StorageAPI.getPhotos();render(items);}}
+document.getElementById('uploadForm').addEventListener('submit',async e=>{{e.preventDefault();const file=document.getElementById('uFile').files[0];if(!file) return alert('Choose a photo.');const name=document.getElementById('uName').value||'Anon';const caption=document.getElementById('uCaption').value||'';const url=await StorageAPI.saveFile(file);await StorageAPI.addPhoto({{name,caption,url,createdAt:Date.now()}});await StorageAPI.addPoints(name,5);alert('Uploaded! +5 points');refresh();}});refresh();
+</script>
+</body></html>
